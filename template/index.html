@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chatbot</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#chatForm').submit(function(event) {
+                event.preventDefault();
+                var message = $('#messageInput').val();
+                $('#messageInput').val('');
+                $('#messages').append('<p class="userMessage">' + message + '</p>');
+                scrollToBottom();
+                sendChatMessage(message);
+            });
+
+            function scrollToBottom() {
+                $('#messages').scrollTop($('#messages').prop('scrollHeight'));
+            }
+
+            function sendChatMessage(message) {
+                $.ajax({
+                    type: 'POST',
+                    url: '/chat',
+                    data: {
+                        message: message
+                    },
+                    success: function(response) {
+                        var botResponse = response.response;
+                        $('#messages').append('<p class="botMessage">' + botResponse + '</p>');
+                        scrollToBottom();
+                    }
+                });
+            }
+        });
+    </script>
+    <style>
+        #messages {
+            height: 300px;
+            overflow-y: scroll;
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+
+        .userMessage {
+            color: blue;
+        }
+
+        .botMessage {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <h1>Chatbot</h1>
+    <div id="messages"></div>
+    <form id="chatForm">
+        <input type="text" id="messageInput" placeholder="Enter your message" autocomplete="off">
+        <input type="submit" value="Send">
+    </form>
+</body>
+</html>
